@@ -1,10 +1,11 @@
 <?php
-  session_start();
+session_start();
 
-  class Logs {
+class Logs {
+
     public $username;
     public $attempt;
-    public $time;
+    public $time =;
 
     public function __construct() {
 
@@ -12,10 +13,10 @@
 
     public function test () {
       $db = db_connect();
-      $statement = $db->prepare("select * from logs;");
+      $statement = $db->prepare("select * from users;");
       $statement->execute();
       $rows = $statement->fetch(PDO::FETCH_ASSOC);
       return $rows;
     }
-  }
+}
 ?>
