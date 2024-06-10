@@ -1,5 +1,4 @@
 <?php
-
 class User {
 
     public $username;
@@ -46,5 +45,4 @@ class User {
 			die;
 		}
     }
-
 }
