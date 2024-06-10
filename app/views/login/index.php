@@ -1,9 +1,19 @@
-<?php require_once 'app/views/templates/headerPublic.php'?>
+<?php 
+require_once 'app/views/templates/headerPublic.php';
+	
+	$error = '';
+	if (isset($_GET['error'])) {
+		$error = $_GET['error'];
+	}
+?>
 <main role="main" class="container">
     <div class="page-header" id="banner">
         <div class="row">
             <div class="col-lg-12">
-                <h1>You are not logged in</h1>
+							<h1>Login</h1>
+							<?php if ($error): ?>
+								<p style="color:red;"><?php echo $error; ?></p>
+							<?php endif; ?>
             </div>
         </div>
     </div>
@@ -24,6 +34,9 @@
 		    <button type="submit" class="btn btn-primary">Login</button>
 		</fieldset>
 		</form> 
+		<br>
+		<br>
+		<a href="signup.php">Create account</a>
 	</div>
 </div>
     <?php require_once 'app/views/templates/footer.php' ?>
