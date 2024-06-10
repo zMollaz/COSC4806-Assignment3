@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'Log.php';
 
 class User {
 
@@ -17,6 +18,7 @@ class User {
 
     public function authenticate($username, $password) {
         $username = strtolower($username);
+        
         if (empty($username) || empty($password)) {
             $_SESSION["loginError"] = 'All fields are required';
             header("Location: /login");
@@ -24,14 +26,8 @@ class User {
         }
 
         $db = db_connect();
-
-        // Check if the user is locked out by querying the logs table
-        $statement = $db->prepare("SELECT COUNT(*) AS failed_attempts 
-                                   FROM logs 
-                                   WHERE username = :name AND attempt = 'bad' AND time > NOW() - INTERVAL 60 SECOND");
-        $statement->bindValue(':name', $username);
-        $statement->execute();
-        $user_attempts = $statement->fetch(PDO::FETCH_ASSOC);
+        $logModel = new Log();
+        $user_attempts = $logModel->getFailedAttempts($username);
 
         if ($user_attempts['failed_attempts'] >= 3) {
             $_SESSION["loginError"] = 'Account locked. Try again after 60 seconds.';
@@ -45,48 +41,35 @@ class User {
         $rows = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (password_verify($password, $rows['password'])) {
+            // Successful attempt
             $_SESSION['auth'] = 1;
             $_SESSION['username'] = ucwords($username);
             unset($_SESSION['loginError']);
-
-            // Log successful attempt
             $attempt = 'good';
-            $time = date('Y-m-d H:i:s');
-            $statement = $db->prepare("INSERT INTO logs (username, attempt, time) VALUES (?, ?, ?)");
-            $statement->execute([$username, $attempt, $time]);
-
-            header('Location: /home');
-            die;
         } else {
-            // Log failed attempt
+            // Failed attempt
             $attempt = 'bad';
-            $time = date('Y-m-d H:i:s');
-            $statement = $db->prepare("INSERT INTO logs (username, attempt, time) VALUES (?, ?, ?)");
-            $statement->execute([$username, $attempt, $time]);
+        }
 
-            // Re-check the number of failed attempts after logging this attempt
-            $statement = $db->prepare("SELECT COUNT(*) AS failed_attempts 
-                                       FROM logs 
-                                       WHERE username = :name AND attempt = 'bad' AND time > NOW() - INTERVAL 60 SECOND");
-            $statement->bindValue(':name', $username);
-            $statement->execute();
-            $result = $statement->fetch(PDO::FETCH_ASSOC);
+        // Log the attempt to logs table in db
+        $logModel->logAttempt($username, $attempt);
 
+        if ($attempt === 'good') {
+            header('Location: /home');
+        } else {
+            $result = $logModel->getFailedAttempts($username);
             if ($result['failed_attempts'] >= 3) {
-                // Update lockout status only if the user has 3 or more failed attempts
                 $_SESSION["loginError"] = 'Account locked. Try again after 60 seconds.';
             } else {
                 $_SESSION["loginError"] = 'Invalid username or password.';
             }
-
             header('Location: /login');
-            die;
         }
+        die;
     }
 
     public function create($username, $password, $verifypassword) {
         $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/';
-
         // Check if fields are empty
         if (empty($username) || empty($password) || empty($verifypassword)) {
             $_SESSION["createError"] = 'All fields are required';
