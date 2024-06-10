@@ -1,9 +1,10 @@
 <?php 
 require_once 'app/views/templates/headerPublic.php';
 	
-	$error = '';
-	if (isset($_GET['error'])) {
-		$error = $_GET['error'];
+session_start();
+$error = '';
+	if (isset($_SESSION["loginError"]) && $_SESSION["loginError"] == true) {
+		$error = $_SESSION["loginError"];
 	}
 ?>
 <main role="main" class="container">

@@ -2,8 +2,8 @@
 require_once 'app/views/templates/headerPublic.php';
 session_start();
   $error = '';
-    if (isset($_SESSION["error"]) && $_SESSION["error"] == true) {
-      $error = $_SESSION["error"];
+    if (isset($_SESSION["createError"]) && $_SESSION["createError"] == true) {
+      $error = $_SESSION["createError"];
     }
 ?>
 <main role="main" class="container">
