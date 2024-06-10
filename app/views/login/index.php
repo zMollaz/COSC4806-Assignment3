@@ -36,7 +36,7 @@ require_once 'app/views/templates/headerPublic.php';
 		</form> 
 		<br>
 		<br>
-		<a href="signup.php">Create account</a>
+		<a href="/create">Create account</a>
 	</div>
 </div>
     <?php require_once 'app/views/templates/footer.php' ?>
