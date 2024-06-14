@@ -9,7 +9,6 @@
                         <p class="card-text">You are now logged in.</p>
                     </div>
                     <div>
-                        <p class="text-end mb-0">Today is <?php echo date("l jS \of F Y"); ?></p>
                     </div>
                 </div>
                 <div class="card-footer text-end">

@@ -13,7 +13,6 @@ if (isset($_SESSION["loginError"]) && $_SESSION["loginError"] == true) {
 						<h1>Login</h1>
 				</div>
 				<div>
-						<p class="text-end mb-0">Today is <?php echo date("l jS \of F Y"); ?></p>
 				</div>
 		</div>
 
